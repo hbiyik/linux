@@ -2,7 +2,6 @@
 /* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
 /* Copyright 2023 Collabora ltd. */
 
-#include <drm/drm_debugfs.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_exec.h>
 #include <drm/drm_gpuvm.h>
@@ -2694,56 +2693,6 @@ int panthor_mmu_init(struct panthor_device *ptdev)
 
 	return drmm_add_action_or_reset(&ptdev->base, panthor_mmu_release_wq, mmu->vm.wq);
 }
-
-#ifdef CONFIG_DEBUG_FS
-static int show_vm_gpuvas(struct panthor_vm *vm, struct seq_file *m)
-{
-	int ret;
-
-	mutex_lock(&vm->op_lock);
-	ret = drm_debugfs_gpuva_info(m, &vm->base);
-	mutex_unlock(&vm->op_lock);
-
-	return ret;
-}
-
-static int show_each_vm(struct seq_file *m, void *arg)
-{
-	struct drm_info_node *node = (struct drm_info_node *)m->private;
-	struct drm_device *ddev = node->minor->dev;
-	struct panthor_device *ptdev = container_of(ddev, struct panthor_device, base);
-	int (*show)(struct panthor_vm *, struct seq_file *) = node->info_ent->data;
-	struct panthor_vm *vm;
-	int ret = 0;
-
-	mutex_lock(&ptdev->mmu->vm.lock);
-	list_for_each_entry(vm, &ptdev->mmu->vm.list, node) {
-		ret = show(vm, m);
-		if (ret < 0)
-			break;
-
-		seq_puts(m, "\n");
-	}
-	mutex_unlock(&ptdev->mmu->vm.lock);
-
-	return ret;
-}
-
-static struct drm_info_list panthor_mmu_debugfs_list[] = {
-	DRM_DEBUGFS_GPUVA_INFO(show_each_vm, show_vm_gpuvas),
-};
-
-/**
- * panthor_mmu_debugfs_init() - Initialize MMU debugfs entries
- * @minor: Minor.
- */
-void panthor_mmu_debugfs_init(struct drm_minor *minor)
-{
-	drm_debugfs_create_files(panthor_mmu_debugfs_list,
-				 ARRAY_SIZE(panthor_mmu_debugfs_list),
-				 minor->debugfs_root, minor);
-}
-#endif /* CONFIG_DEBUG_FS */
 
 /**
  * panthor_mmu_pt_cache_init() - Initialize the page table cache.
