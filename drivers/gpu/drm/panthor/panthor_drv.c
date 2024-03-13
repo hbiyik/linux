@@ -10,7 +10,6 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 
-#include <drm/drm_debugfs.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_exec.h>
 #include <drm/drm_ioctl.h>
@@ -1347,13 +1346,6 @@ static const struct file_operations panthor_drm_driver_fops = {
 	.mmap = panthor_mmap,
 };
 
-#ifdef CONFIG_DEBUG_FS
-static void panthor_debugfs_init(struct drm_minor *minor)
-{
-	panthor_mmu_debugfs_init(minor);
-}
-#endif
-
 /*
  * PanCSF driver version:
  * - 1.0 - initial interface
@@ -1374,9 +1366,6 @@ static const struct drm_driver panthor_drm_driver = {
 
 	.gem_create_object = panthor_gem_create_object,
 	.gem_prime_import_sg_table = drm_gem_shmem_prime_import_sg_table,
-#ifdef CONFIG_DEBUG_FS
-	.debugfs_init = panthor_debugfs_init,
-#endif
 };
 
 static int panthor_probe(struct platform_device *pdev)

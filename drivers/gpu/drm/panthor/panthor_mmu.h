@@ -95,8 +95,4 @@ void panthor_vm_update_resvs(struct panthor_vm *vm, struct drm_exec *exec,
 int panthor_mmu_pt_cache_init(void);
 void panthor_mmu_pt_cache_fini(void);
 
-#ifdef CONFIG_DEBUG_FS
-void panthor_mmu_debugfs_init(struct drm_minor *minor);
-#endif
-
 #endif
