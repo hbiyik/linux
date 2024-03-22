@@ -1,0 +1,27 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/clock/rk3588-cru.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/power/rk3588-power.h>
+
+/ {
+
+    fragment@0 {
+        target = <&gpu>;
+
+        __overlay__ {
+            status = "disabled";
+       };
+    };
+
+    fragment@1 {
+        target = <&gpu_mali>;
+
+        __overlay__ {
+            status = "okay";
+            mali-supply = <&vdd_gpu_s0>;
+            sram-supply = <&vdd_gpu_mem_s0>;
+       };
+    };
+};
