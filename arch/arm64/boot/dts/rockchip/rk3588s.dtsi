@@ -2387,6 +2387,31 @@
 		status = "disabled";
 	};
 
+	gpu_mali: gpu-mali@fb000000 {
+		compatible = "arm,mali-bifrost";
+		reg = <0x0 0xfb000000 0x0 0x200000>;
+		interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+				 <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
+				 <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "GPU", "MMU", "JOB";
+
+		clocks = <&scmi_clk SCMI_CLK_GPU>, <&cru CLK_GPU_COREGROUP>,
+			 <&cru CLK_GPU_STACKS>, <&cru CLK_GPU>;
+		clock-names = "clk_mali", "clk_gpu_coregroup",
+				  "clk_gpu_stacks", "clk_gpu";
+		assigned-clocks = <&scmi_clk SCMI_CLK_GPU>;
+		assigned-clock-rates = <200000000>;
+		power-domains = <&power RK3588_PD_GPU>;
+		operating-points-v2 = <&gpu_opp_table>;
+		#cooling-cells = <2>;
+		dynamic-power-coefficient = <2982>;
+
+		upthreshold = <30>;
+		downdifferential = <10>;
+
+		status = "disabled";
+	};
+
 	gpu_opp_table: gpu-opp-table {
 		compatible = "operating-points-v2";
 
