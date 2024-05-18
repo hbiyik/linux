@@ -135,13 +135,20 @@ static struct rockchip_pll_rate_table rk3188_pll_rates[] = {
 	}
 
 static struct rockchip_cpuclk_rate_table rk3066_cpuclk_rates[] __initdata = {
+	RK3066_CPUCLK_RATE(1800000000, 2, 3, 1, 2, 1),
+	RK3066_CPUCLK_RATE(1704000000, 2, 3, 1, 2, 1),
+	RK3066_CPUCLK_RATE(1608000000, 2, 3, 1, 2, 1),
+	RK3066_CPUCLK_RATE(1512000000, 2, 3, 1, 2, 1),
 	RK3066_CPUCLK_RATE(1416000000, 2, 3, 1, 2, 1),
+	RK3066_CPUCLK_RATE(1272000000, 2, 3, 1, 2, 1),
 	RK3066_CPUCLK_RATE(1200000000, 2, 3, 1, 2, 1),
 	RK3066_CPUCLK_RATE(1008000000, 2, 2, 1, 2, 1),
 	RK3066_CPUCLK_RATE( 816000000, 2, 2, 1, 2, 1),
 	RK3066_CPUCLK_RATE( 600000000, 1, 2, 1, 2, 1),
 	RK3066_CPUCLK_RATE( 504000000, 1, 1, 1, 2, 1),
 	RK3066_CPUCLK_RATE( 312000000, 0, 1, 1, 1, 0),
+	RK3066_CPUCLK_RATE( 252000000, 0, 1, 1, 1, 0),
+	RK3066_CPUCLK_RATE( 126000000, 0, 1, 1, 1, 0),
 };
 
 static const struct rockchip_cpuclk_reg_data rk3066_cpuclk_data = {
