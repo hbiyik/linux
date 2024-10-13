@@ -11,6 +11,7 @@
 
 /* Highest firmware API version supported */
 #define IWL_22000_UCODE_API_MAX	72
+#define IWL_22000_GLC_UCODE_API_MAX 83
 
 /* Lowest firmware API version supported */
 #define IWL_22000_UCODE_API_MIN	39
@@ -59,6 +60,7 @@
 #define IWL_BZ_A_FM4_A_FW_PRE		"iwlwifi-bz-a0-fm4-a0-"
 #define IWL_GL_A_FM_A_FW_PRE		"iwlwifi-gl-a0-fm-a0-"
 #define IWL_GL_B_FM_B_FW_PRE		"iwlwifi-gl-b0-fm-b0-"
+#define IWL_GL_C_FM_C_FW_PRE        "iwlwifi-gl-c0-fm-c0-"
 #define IWL_BZ_Z_GF_A_FW_PRE		"iwlwifi-bz-z0-gf-a0-"
 #define IWL_BNJ_A_FM_A_FW_PRE		"iwlwifi-BzBnj-a0-fm-a0-"
 #define IWL_BNJ_A_FM4_A_FW_PRE		"iwlwifi-BzBnj-a0-fm4-a0-"
@@ -128,6 +130,8 @@
 		IWL_GL_A_FM_A_FW_PRE __stringify(api) ".ucode"
 #define IWL_GL_B_FM_B_MODULE_FIRMWARE(api) \
 		IWL_GL_B_FM_B_FW_PRE __stringify(api) ".ucode"
+#define IWL_GL_C_FM_C_MODULE_FIRMWARE(api) \
+    IWL_GL_C_FM_C_FW_PRE __stringify(api) ".ucode"
 #define IWL_BNJ_A_FM_A_MODULE_FIRMWARE(api) \
 	IWL_BNJ_A_FM_A_FW_PRE __stringify(api) ".ucode"
 #define IWL_BNJ_A_FM4_A_MODULE_FIRMWARE(api) \
@@ -249,9 +253,17 @@ static const struct iwl_ht_params iwl_22000_ht_params = {
 		},							\
 	}
 
-#define IWL_DEVICE_BZ							\
-	.ucode_api_max = IWL_22000_UCODE_API_MAX,			\
-	.ucode_api_min = IWL_22000_UCODE_API_MIN,			\
+#define IWL_DEVICE_BZ                           \
+    .ucode_api_max = IWL_22000_UCODE_API_MAX,           \
+    .ucode_api_min = IWL_22000_UCODE_API_MIN,           \
+    _IWL_DEVICE_BZ
+
+#define IWL_DEVICE_GL_C                           \
+    .ucode_api_max = IWL_22000_GLC_UCODE_API_MAX,           \
+    .ucode_api_min = IWL_22000_GLC_UCODE_API_MAX,           \
+    _IWL_DEVICE_BZ
+
+#define _IWL_DEVICE_BZ							\
 	.led_mode = IWL_LED_RF_STATE,					\
 	.nvm_hw_section_num = 10,					\
 	.non_shared_ant = ANT_B,					\
@@ -939,6 +951,13 @@ const struct iwl_cfg iwl_cfg_bz_a0_fm4_a0 = {
 	.num_rbds = IWL_NUM_RBDS_AX210_HE,
 };
 
+const struct iwl_cfg iwl_cfg_gl_c0_fm_c0 = {
+    .fw_name_pre = IWL_GL_C_FM_C_FW_PRE,
+    .uhb_supported = true,
+    IWL_DEVICE_GL_C,
+    .num_rbds = IWL_NUM_RBDS_AX210_HE,
+};
+
 const struct iwl_cfg iwl_cfg_gl_a0_fm_a0 = {
 	.fw_name_pre = IWL_GL_A_FM_A_FW_PRE,
 	.uhb_supported = true,
@@ -1029,6 +1048,7 @@ MODULE_FIRMWARE(IWL_BZ_A_GF4_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
 MODULE_FIRMWARE(IWL_BZ_A_MR_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
 MODULE_FIRMWARE(IWL_BZ_A_FM_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
 MODULE_FIRMWARE(IWL_GL_A_FM_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
+MODULE_FIRMWARE(IWL_GL_C_FM_C_MODULE_FIRMWARE(IWL_22000_GLC_UCODE_API_MAX));
 MODULE_FIRMWARE(IWL_BNJ_A_FM_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
 MODULE_FIRMWARE(IWL_BNJ_A_FM4_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
 MODULE_FIRMWARE(IWL_BNJ_A_GF_A_MODULE_FIRMWARE(IWL_22000_UCODE_API_MAX));
