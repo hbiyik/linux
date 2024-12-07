@@ -6,7 +6,7 @@
 #include "rk3128-evb-ddr3-v10-linux.dts"
 / {
 	chosen {
-		bootargs = "earlycon=uart8250,mmio32,0x20068000 console=ttyFIQ0 root=PARTUUID=614e0000-0000-4b53-8000-1d28000054a9 rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0x20068000 console=ttyFIQ0";
 	};
 };
 
