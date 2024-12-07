@@ -13,7 +13,7 @@
 	compatible = "rockchip,rk3326-evb-lp3-v10-linux", "rockchip,rk3326";
 
 	chosen {
-                bootargs = "earlycon=uart8250,mmio32,0xff160000 console=ttyFIQ0 rw root=PARTUUID=614e0000-0000 rootfstype=ext4 rootwait";
+                bootargs = "earlycon=uart8250,mmio32,0xff160000";
         };
 
 	/delete-node/ test-power;

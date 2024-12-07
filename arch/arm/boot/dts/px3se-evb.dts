@@ -10,7 +10,7 @@
 	compatible = "rockchip,px3se-evb", "rockchip,rk3128";
 
 	chosen {
-		bootargs = "loglevel=7 root=PARTUUID=614e0000-0000-4b53-8000-1d28000054a9 rootwait";
+		bootargs = "loglevel=7";
 	};
 
 	adc-keys {

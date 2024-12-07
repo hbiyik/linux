@@ -8,7 +8,7 @@
 	compatible = "rockchip,linux", "rockchip,rk3358", "rockchip,px30";
 
 	chosen {
-		bootargs = "earlycon=uart8250,mmio32,0xff160000 console=ttyFIQ0 rw root=PARTUUID=614e0000-0000 rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0xff160000 console=ttyFIQ0";
 	};
 
 	fiq-debugger {
