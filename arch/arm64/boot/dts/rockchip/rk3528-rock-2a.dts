@@ -17,8 +17,6 @@
     model = "Radxa ROCK 2A";
     compatible = "radxa,rock-2a", "radxa,rock-2", "rockchip,rk3528a";
 
-    /delete-node/ chosen;
-
     aliases {
         mmc0 = &sdmmc;
         mmc1 = &sdhci;
