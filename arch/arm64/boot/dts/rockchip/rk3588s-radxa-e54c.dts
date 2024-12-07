@@ -24,8 +24,6 @@
     model = "Radxa E54C";
     compatible = "radxa,e54c", "rockchip,rk3588";
 
-    /delete-node/ chosen;
-
     dc_12v: dc-12v {
         compatible = "regulator-fixed";
         regulator-name = "vcc5v0_sys";

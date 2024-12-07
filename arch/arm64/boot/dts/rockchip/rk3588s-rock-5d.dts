@@ -23,8 +23,6 @@
     model = "Radxa ROCK 5D";
     compatible = "radxa,rock-5d", "rockchip,rk3588";
 
-    /delete-node/ chosen;
-
     fan0: pwm-fan {
         compatible = "pwm-fan";
         #cooling-cells = <2>;

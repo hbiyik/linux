@@ -22,8 +22,6 @@
 / {
     compatible = "radxa,cm5", "rockchip,rk3588";
 
-    /delete-node/ chosen;
-
     aliases {
         mmc0 = &sdmmc;
         mmc1 = &sdhci;

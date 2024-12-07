@@ -24,8 +24,6 @@
     model = "Radxa ROCK 5 ITX";
     compatible = "radxa,rock-5-itx", "rockchip,rk3588";
 
-    /delete-node/ chosen;
-
     adc_keys: adc-keys {
         compatible = "adc-keys";
         io-channels = <&saradc 0>;
