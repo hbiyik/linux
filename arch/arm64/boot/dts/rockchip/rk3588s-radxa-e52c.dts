@@ -23,8 +23,6 @@
     model = "Radxa E52C";
     compatible = "radxa,e52c", "rockchip,rk3588";
 
-    /delete-node/ chosen;
-
     fan0: pwm-fan {
         compatible = "pwm-fan";
         #cooling-cells = <2>;
