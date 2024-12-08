@@ -83,6 +83,18 @@
 	};
 };
 
+&gpu {
+	status = "disabled";
+};
+
+&gpu_bus {
+	status = "disabled";
+};
+&gpu_lima {
+	mali-supply = <&vdd_logic>;
+	status = "okay";
+};
+
 &rng {
 	status = "okay";
 };
