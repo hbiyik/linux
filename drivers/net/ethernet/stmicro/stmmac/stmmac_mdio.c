@@ -405,7 +405,8 @@ int stmmac_mdio_reset(struct mii_bus *bus)
 			msleep(DIV_ROUND_UP(delays[2], 1000));
 
 		/* put reset gpio resource for next time */
-		devm_gpiod_put(priv->device, reset_gpio);
+		if (reset_gpio)
+		    devm_gpiod_put(priv->device, reset_gpio);
 	}
 #endif
 
