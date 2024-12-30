@@ -78,6 +78,15 @@
     };
 };
 
+&vdd_cpu {
+    regulator-max-microvolt = <1101000>;
+};
+
+&cpu0_opp_table {
+    // disable pvtm, i dont respect the device much...
+    /delete-property/ rockchip,pvtm-voltage-sel;
+};
+
 &hdmi {
     pinctrl-1 = <&hdmi_pins>;
     pinctrl-names = "default", "sleep";
