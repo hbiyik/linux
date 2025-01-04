@@ -463,8 +463,8 @@ static int lima_pdev_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id dt_match[] = {
-	{ .compatible = "arm,mali-400", .data = (void *)lima_gpu_mali400 },
-	{ .compatible = "arm,mali-450", .data = (void *)lima_gpu_mali450 },
+	{ .compatible = "arm,mali-400,lima", .data = (void *)lima_gpu_mali400 },
+	{ .compatible = "arm,mali-450,lima", .data = (void *)lima_gpu_mali450 },
 	{}
 };
 MODULE_DEVICE_TABLE(of, dt_match);
