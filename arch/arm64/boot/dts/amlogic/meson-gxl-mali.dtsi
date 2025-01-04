@@ -7,7 +7,7 @@
 #include "meson-gx-mali450.dtsi"
 
 &mali {
-	compatible = "amlogic,meson-gxl-mali", "arm,mali-450";
+	compatible = "amlogic,meson-gxl-mali", "arm,mali-450,lima";
 
 	clocks = <&clkc CLKID_CLK81>, <&clkc CLKID_MALI>;
 	clock-names = "bus", "core";

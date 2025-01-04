@@ -452,7 +452,7 @@
 		};
 
 		gpu: gpu@13000000 {
-			compatible = "samsung,exynos4210-mali", "arm,mali-400";
+			compatible = "samsung,exynos4210-mali", "arm,mali-400,lima";
 			reg = <0x13000000 0x10000>;
 			interrupts = <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,

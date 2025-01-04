@@ -135,7 +135,7 @@
 		};
 
 		mali: gpu@1e80000 {
-			compatible = "allwinner,sun50i-h5-mali", "arm,mali-450";
+			compatible = "allwinner,sun50i-h5-mali", "arm,mali-450,lima";
 			reg = <0x01e80000 0x30000>;
 			/*
 			 * While the datasheet lists an interrupt for the

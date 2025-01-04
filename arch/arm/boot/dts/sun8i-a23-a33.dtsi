@@ -587,7 +587,7 @@
 
 		mali: gpu@1c40000 {
 			compatible = "allwinner,sun8i-a23-mali",
-				     "allwinner,sun7i-a20-mali", "arm,mali-400";
+				     "allwinner,sun7i-a20-mali", "arm,mali-400,lima";
 			reg = <0x01c40000 0x10000>;
 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,

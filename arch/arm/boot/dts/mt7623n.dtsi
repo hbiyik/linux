@@ -25,7 +25,7 @@
 	};
 
 	mali: gpu@13040000 {
-		compatible = "mediatek,mt7623-mali", "arm,mali-450";
+		compatible = "mediatek,mt7623-mali", "arm,mali-450,lima";
 		reg = <0 0x13040000 0 0x30000>;
 		interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_LOW>,
 			     <GIC_SPI 171 IRQ_TYPE_LEVEL_LOW>,
