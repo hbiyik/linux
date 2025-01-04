@@ -396,7 +396,7 @@
 		};
 
 		gpu: gpu@13000000 {
-			compatible = "samsung,exynos4210-mali", "arm,mali-400";
+			compatible = "samsung,exynos4210-mali", "arm,mali-400,lima";
 			reg = <0x13000000 0x10000>;
 			/*
 			 * CLK_G3D is not actually bus clock but a IP-level clock.
