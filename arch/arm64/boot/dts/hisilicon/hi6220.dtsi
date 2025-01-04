@@ -1025,7 +1025,7 @@
 		};
 
 		mali: gpu@f4080000 {
-			compatible = "hisilicon,hi6220-mali", "arm,mali-450";
+			compatible = "hisilicon,hi6220-mali", "arm,mali-450.lima";
 			reg = <0x0 0xf4080000 0x0 0x00040000>;
 			interrupt-parent = <&gic>;
 			interrupts =	<GIC_PPI 126 IRQ_TYPE_LEVEL_HIGH>,

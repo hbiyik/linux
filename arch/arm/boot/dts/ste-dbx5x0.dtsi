@@ -1086,7 +1086,7 @@
 			 * in documentation but is in practice a pretty straight-forward
 			 * MALI-400 GPU block.
 			 */
-			compatible = "stericsson,db8500-mali", "arm,mali-400";
+			compatible = "stericsson,db8500-mali", "arm,mali-400,lima";
 			reg = <0xa0300000 0x10000>;
 			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,

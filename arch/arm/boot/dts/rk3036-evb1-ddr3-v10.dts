@@ -14,7 +14,7 @@
 	compatible = "rockchip,rk3036-evb1-ddr3-v10", "rockchip,rk3036";
 
 	chosen {
-		bootargs = "console=uart8250,mmio32,0x20068000 rw root=PARTUUID=614e0000-0000 rootfstype=ext4 rootwait";
+		bootargs = "console=uart8250,mmio32,0x20068000";
 	};
 
 	memory {
