@@ -49,6 +49,16 @@
         status = "okay";
     };
 
+   openvfd {
+        status = "okay";
+        compatible = "open,vfd";
+        dev_name = "openvfd";
+        openvfd_gpio_clk = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
+        openvfd_gpio_dat = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
+        openvfd_display_type = <0x03000100>;
+        openvfd_dot_bits = [00 01 03 02 04 05 06];
+   };
+
     sdio_pwrseq: sdio-pwrseq {
         compatible = "mmc-pwrseq-simple";
         pinctrl-names = "default";
