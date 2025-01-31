@@ -6,7 +6,7 @@
 
 / {
 	chosen: chosen {
-		bootargs = "earlycon=uart8250,mmio32,0xff9f0000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rw rootwait";
+		bootargs = "earlycon=uart8250,mmio32,0xff9f0000 console=ttyFIQ0";
 	};
 
 	fiq-debugger {
@@ -81,6 +81,18 @@
 			connect = <&vp1_out_tve>;
 		};
 	};
+};
+
+&gpu {
+	status = "disabled";
+};
+
+&gpu_bus {
+	status = "disabled";
+};
+&gpu_lima {
+	mali-supply = <&vdd_logic>;
+	status = "okay";
 };
 
 &rng {
