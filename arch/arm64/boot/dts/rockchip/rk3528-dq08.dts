@@ -144,7 +144,6 @@
         interrupt-names = "host-wake";
         reset-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_HIGH>;
         pinctrl-0 = <&wifi_wake &wifi_reset>;
-        brcm,board-type = "hk2735m";
         status = "okay";
    };
 };
