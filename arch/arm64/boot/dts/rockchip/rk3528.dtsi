@@ -442,8 +442,8 @@
 				reg = <0x14>;
 				#clock-cells = <1>;
 
-				assigned-clocks = <&scmi_clk SCMI_CLK_CPU>;
-				assigned-clock-rates = <1200000000>;
+				assigned-clocks = <&scmi_clk SCMI_CLK_CPU>, <&scmi_clk SCMI_CLK_GPU>;
+				assigned-clock-rates = <1200000000>, <800000000>;
 			};
 		};
 	};
@@ -1065,9 +1065,8 @@
 						  "ppmmu0",
 						  "pp1",
 						  "ppmmu1";
-		clocks = <&scmi_clk SCMI_CLK_GPU>, <&cru ACLK_GPU_MALI>;
+		clocks = <&cru ACLK_GPU_MALI>, <&cru ACLK_GPU_MALI>;
 		clock-names = "bus", "core";
-		operating-points-v2 = <&gpu_opp_table>;
 		#cooling-cells = <2>;
 		status = "disabled";
 	};
