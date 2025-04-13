@@ -1801,6 +1801,8 @@ static int rockchip_hdmi_parse_dt(struct rockchip_hdmi *hdmi)
 		hdmi->hpd_wake_en = device_property_read_bool(hdmi->dev, "hpd-wake-up");
 		if (hdmi->hpd_wake_en)
 			enable_irq_wake(hdmi->hpd_irq);
+
+		rockchip_hdmi_hpd_irq_handler(0, hdmi);
 	}
 
 	hdmi->p = devm_pinctrl_get(hdmi->dev);
