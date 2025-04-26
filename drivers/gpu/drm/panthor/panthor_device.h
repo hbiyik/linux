@@ -109,6 +109,9 @@ struct panthor_device {
 
 		/** @coregroup: Core group clock. This clock is optional. */
 		struct clk *coregroup;
+
+		/** @opp: Clock used for opp. This clock is optional. */
+		struct clk *opp;
 	} clks;
 
 	/** @coherent: True if the CPU/GPU are memory coherent. */
