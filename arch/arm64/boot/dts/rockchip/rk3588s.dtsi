@@ -2370,9 +2370,9 @@
 				 <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-names = "job", "mmu", "gpu";
 
-		clock-names = "core", "coregroup", "stacks";
+		clock-names = "core", "coregroup", "stacks", "opp";
 		clocks = <&cru CLK_GPU>, <&cru CLK_GPU_COREGROUP>,
-			 <&cru CLK_GPU_STACKS>;
+			 <&cru CLK_GPU_STACKS>, <&scmi_clk SCMI_CLK_GPU>;
 		assigned-clocks = <&scmi_clk SCMI_CLK_GPU>;
 		assigned-clock-rates = <200000000>;
 		power-domains = <&power RK3588_PD_GPU>;
