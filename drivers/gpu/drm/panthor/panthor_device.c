@@ -61,7 +61,13 @@ static int panthor_clk_init(struct panthor_device *ptdev)
 				     PTR_ERR(ptdev->clks.coregroup),
 				     "get 'coregroup' clock failed");
 
-	drm_info(&ptdev->base, "clock rate = %lu\n", clk_get_rate(ptdev->clks.core));
+	ptdev->clks.opp = devm_clk_get_optional(ptdev->base.dev, "opp");
+	if (IS_ERR(ptdev->clks.opp))
+		return dev_err_probe(ptdev->base.dev,
+				     PTR_ERR(ptdev->clks.opp),
+				     "get 'opp' clock failed");
+
+	drm_info(&ptdev->base, "clock rate = %lu\n", clk_get_rate(ptdev->clks.opp ?: ptdev->clks.core));
 	return 0;
 }
 
