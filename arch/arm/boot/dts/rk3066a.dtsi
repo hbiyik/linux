@@ -780,7 +780,7 @@
 };
 
 &gpu {
-	compatible = "rockchip,rk3066-mali", "arm,mali-400";
+	compatible = "rockchip,rk3066-mali", "arm,mali-400,lima";
 	interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,

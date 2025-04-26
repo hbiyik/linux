@@ -1,0 +1,208 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ */
+
+/dts-v1/;
+
+#include "rk3528-demo.dtsi"
+#include "rk3528-linux.dtsi"
+
+/ {
+    model = "Rockchip RK3528 DQ08 TV-Box";
+    compatible = "rockchip,rk3528-box", "rockchip,rk3528a";
+    
+    /delete-node/ bt-sco;
+    /delete-node/ bt-sound;
+    /delete-node/ gpio-leds;
+    /delete-node/ spdif-sound;
+    
+    vcc_sd: vcc-sd {
+        compatible = "regulator-fixed";
+        regulator-always-on;
+        regulator-name = "vcc_sd";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vcc_3v3_s3>;
+    };
+
+    vccio_sd: vccio-sd {
+        compatible = "regulator-gpio";
+        regulator-always-on;
+        regulator-name = "vccio_sd";
+        regulator-min-microvolt = <1800000>;
+        regulator-max-microvolt = <1800000>;
+        vin-supply = <&vcc5v0_sys>;
+    };
+
+    sdio_pwrseq: sdio-pwrseq {
+        compatible = "mmc-pwrseq-simple";
+        pinctrl-names = "default";
+        pinctrl-0 = <&wifi_enable  &clkm0_32k_out>;
+        reset-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+    };
+
+     // front led panel
+    fd628_dev: fd628-dev {
+        compatible = "amlogic, fd628_dev";
+        fd628_gpio_clk = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
+        fd628_gpio_dat = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
+        status = "okay";
+    };
+
+   openvfd {
+        status = "okay";
+        compatible = "open,vfd";
+        dev_name = "openvfd";
+        openvfd_gpio_clk = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
+        openvfd_gpio_dat = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
+        openvfd_display_type = <0x03000100>;
+        openvfd_dot_bits = [00 01 03 02 04 05 06];
+   };
+
+    sdio_pwrseq: sdio-pwrseq {
+        compatible = "mmc-pwrseq-simple";
+        pinctrl-names = "default";
+        pinctrl-0 = <&wifi_wake &clkm0_32k_out>;
+        reset-gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
+        post-power-on-delay-ms = <100>;
+    };
+};
+
+&pinctrl {
+    bcm4335 {
+        wifi_enable: wifi-enable {
+            rockchip,pins = <3 RK_PB2 RK_FUNC_GPIO &pcfg_output_high>;
+        };
+
+        wifi_wake: wifi-wake {
+            rockchip,pins = <3 RK_PB3 RK_FUNC_GPIO &pcfg_pull_down>;
+        };
+
+        wifi_reset: wifi-reset {
+            rockchip,pins = <3 RK_PB4 RK_FUNC_GPIO &pcfg_output_high>;
+        };
+
+        uart2m0_gpios: uart2m0-gpios {
+            rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+    };
+};
+
+&vdd_cpu {
+    regulator-max-microvolt = <1101000>;
+};
+
+&cpu0_opp_table {
+    // disable pvtm, i dont respect the device much...
+    /delete-property/ rockchip,pvtm-voltage-sel;
+};
+
+&hdmi {
+    pinctrl-1 = <&hdmi_pins>;
+    pinctrl-names = "default", "sleep";
+    cec-enable;
+};
+
+&sdhci {
+    cap-mmc-highspeed;
+    disable-wp;
+    fifo-depth = <256>;
+    max-frequency = <150000000>;
+    mmc-hs200-1_8v;
+};
+
+&sdio1 {
+    mmc-pwrseq = <&sdio_pwrseq>;
+    pinctrl-0 = <&sdio1_bus4 &sdio1_cmd &sdio1_clk>;
+    pinctrl-names = "default";
+    status = "okay";
+    bus-width = <4>;
+    post-power-on-delay-ms = <100>;
+    max-frequency = <208000000>;
+    fifo-depth = <4096>;
+    keep-power-in-suspend;
+    cap-sd-highspeed;
+    cap-sdio-irq;
+    disable-wp;
+    no-mmc;
+    no-sd;
+    non-removable;
+    sd-uhs-ddr50;
+    sd-uhs-sdr12;
+    sd-uhs-sdr25;
+    sd-uhs-sdr50;
+    sd-uhs-sdr104;
+    supports-sdio;
+    #address-cells = <1>;
+    #size-cells = <0>;
+    
+    wifi@1 {
+        compatible = "brcm,bcm4335-fmac";
+        reg = <1>;
+        interrupt-parent = <&gpio3>;
+        interrupts = <RK_PB3 IRQ_TYPE_LEVEL_HIGH>;
+        interrupt-names = "host-wake";
+        reset-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_HIGH>;
+        pinctrl-0 = <&wifi_wake &wifi_reset>;
+        status = "okay";
+   };
+};
+
+&sdmmc {
+    vmmc-supply = <&vcc_sd>;
+    pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_det &sdmmc_bus4>;
+    pinctrl-names = "default";
+    status = "okay";
+    bus-width = <4>;
+    card-detect-delay = <500>;
+    num-slots = <1>;
+    cap-mmc-highspeed;
+    cap-sd-highspeed;
+    disable-wp;
+    supports-sd;
+};
+
+&spdif_out {
+    status = "disabled";
+};
+
+&rng {
+    status = "okay";
+};
+
+&rkvtunnel {
+    status = "okay";
+};
+
+&uart2 {
+    status = "okay";
+    dma-names = "!tx", "!rx";
+    pinctrl-0 = <&uart2m0_xfer &uart2m0_ctsn>;
+    pinctrl-names = "default";
+
+    bluetooth {
+        compatible = "brcm,bcm4335a0";
+    };
+};
+
+&uart3 {
+    status = "okay";
+    dma-names = "!tx", "!rx";
+    pinctrl-0 = <&uart3m1_xfer>;
+    pinctrl-names = "default";
+};
+
+&spdif_8ch {
+    status = "disabled";
+};
+
+&combphy_pu {
+    status = "okay";
+};
+
+&usbdrd_dwc3 {
+    dr_mode = "host";
+    phy-names = "usb2-phy", "usb3-phy";
+    phys = <&u2phy_otg &combphy_pu 4>;
+    snps,xhci-trb-ent-quirk;
+};
