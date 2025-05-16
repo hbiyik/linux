@@ -484,6 +484,26 @@ void rockchip_clk_register_plls(struct rockchip_clk_provider *ctx,
 }
 EXPORT_SYMBOL_GPL(rockchip_clk_register_plls);
 
+void rockchip_clk_register_pvtplls(struct rockchip_clk_provider *ctx,
+				struct rockchip_pvtpll_clock *list,
+				unsigned int nr_pvtpll)
+{
+	struct clk *clk;
+	int idx;
+
+	for (idx = 0; idx < nr_pvtpll; idx++, list++) {
+		clk = rockchip_clk_register_pvtpll(ctx, list);
+		if (IS_ERR(clk)) {
+			pr_err("%s: failed to register clock %s\n", __func__,
+				list->name);
+			continue;
+		}
+
+		rockchip_clk_add_lookup(ctx, clk, list->id);
+	}
+}
+EXPORT_SYMBOL_GPL(rockchip_clk_register_pvtplls);
+
 void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
 				    struct rockchip_clk_branch *list,
 				    unsigned int nr_clk)

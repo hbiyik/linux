@@ -640,6 +640,30 @@ struct rockchip_pll_clock {
 	struct rockchip_pll_rate_table *rate_table;
 };
 
+struct rockchip_pvtpll_clock {
+	unsigned int id;
+	const char *name;
+	const char	*parent_name;
+	unsigned int enable_addr;
+	unsigned int enable_shift;
+	unsigned int enable_mask;
+	unsigned int start_addr;
+	unsigned int start_shift;
+	unsigned int start_mask;
+	unsigned int ringsel_addr;
+	unsigned int ringsel_shift;
+	unsigned int ringsel_mask;
+	unsigned int ringlen_addr;
+	unsigned int ringlen_shift;
+	unsigned int ringlen_mask;
+	unsigned int sample_addr;
+	unsigned int sample_shift;
+	unsigned int sample_mask;
+	unsigned int total_addr;
+	unsigned int total_shift;
+	unsigned int total_mask;
+};
+
 /*
  * PLL flags
  */
@@ -665,6 +689,45 @@ struct rockchip_pll_clock {
 		.rate_table	= _rtable,				\
 	}
 
+#define PVTPLL(_id, _name, _pname, \
+		_st_a, _st_s, _st_m, \
+		_en_a, _en_s, _en_m, \
+		_rs_a, _rs_s, _rs_m, \
+		_rl_a, _rl_s, _rl_m, \
+		_sm_a, \
+		_to_a, _to_s, _to_m) \
+	{ \
+		.id = _id, \
+		.name = _name, \
+		.parent_name	= _pname, \
+		.enable_addr = _en_a, \
+		.enable_shift = _en_s, \
+		.enable_mask = _en_m, \
+		.start_addr = _st_a, \
+		.start_shift = _st_s, \
+		.start_mask = _st_m, \
+		.ringsel_addr = _rs_a, \
+		.ringsel_shift = _rs_s, \
+		.ringsel_mask = _rs_m, \
+		.ringlen_addr = _rl_a, \
+		.ringlen_shift = _rl_s, \
+		.ringlen_mask = _rl_m, \
+		.sample_addr = _sm_a, \
+		.total_addr = _to_a, \
+		.total_shift = _to_s, \
+		.total_mask = _to_m, \
+	}
+
+#define PVTPLL_V0(_id, _name, _pname) \
+	PVTPLL(_id, _name, _pname, \
+		0x0, 0, BIT(1) - 1,\
+		0x0, 1, BIT(1) - 1,\
+		0x0, 8, BIT(3) - 1,\
+		0x4, 0, BIT(6) - 1,\
+		0x8, \
+		0x18, 0, BIT(14) - 1\
+		),
+
 struct clk *rockchip_clk_register_pll(struct rockchip_clk_provider *ctx,
 		enum rockchip_pll_type pll_type,
 		const char *name, const char *const *parent_names,
@@ -672,6 +735,9 @@ struct clk *rockchip_clk_register_pll(struct rockchip_clk_provider *ctx,
 		int lock_shift, int mode_offset, int mode_shift,
 		struct rockchip_pll_rate_table *rate_table,
 		unsigned long flags, u8 clk_pll_flags);
+
+struct clk* rockchip_clk_register_pvtpll(struct rockchip_clk_provider *ctx,
+		struct rockchip_pvtpll_clock *list);
 
 void rockchip_boost_init(struct clk_hw *hw);
 
@@ -1360,6 +1426,9 @@ void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
 void rockchip_clk_register_plls(struct rockchip_clk_provider *ctx,
 				struct rockchip_pll_clock *pll_list,
 				unsigned int nr_pll, int grf_lock_offset);
+void rockchip_clk_register_pvtplls(struct rockchip_clk_provider *ctx,
+				struct rockchip_pvtpll_clock *list,
+				unsigned int nr_pvtpll);
 void rockchip_clk_register_armclk(struct rockchip_clk_provider *ctx,
 				  unsigned int lookup_id,
 				  const char *name,
