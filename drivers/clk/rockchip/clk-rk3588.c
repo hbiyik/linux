@@ -522,6 +522,7 @@ PNAME(mux_24m_ppll_p)			= { "xin24m", "ppll" };
 PNAME(clk_ref_pipe_phy0_p)		= { "clk_ref_pipe_phy0_osc_src", "clk_ref_pipe_phy0_pll_src" };
 PNAME(clk_ref_pipe_phy1_p)		= { "clk_ref_pipe_phy1_osc_src", "clk_ref_pipe_phy1_pll_src" };
 PNAME(clk_ref_pipe_phy2_p)		= { "clk_ref_pipe_phy2_osc_src", "clk_ref_pipe_phy2_pll_src" };
+PNAME(mux_gpu_src_t_pvtpll_gpu)	= { "gpu_src_t", "pvtpll_gpu" };
 
 #define MFLAGS CLK_MUX_HIWORD_MASK
 #define DFLAGS CLK_DIVIDER_HIWORD_MASK
@@ -1349,20 +1350,25 @@ static struct rockchip_clk_branch rk3588_clk_branches[] __initdata = {
 			RK3588_CLKGATE_CON(70), 10, GFLAGS),
 
 	/* gpu */
-	COMPOSITE(CLK_GPU_SRC, "clk_gpu_src", gpll_cpll_aupll_npll_spll_p, 0,
+	COMPOSITE(CLK_GPU_SRC_T, "clk_gpu_src_t", gpll_cpll_aupll_npll_spll_p, 0,
 			RK3588_CLKSEL_CON(158), 5, 3, MFLAGS, 0, 5, DFLAGS,
 			RK3588_CLKGATE_CON(66), 1, GFLAGS),
+    COMPOSITE_NOMUX(CLK_GPU_STACKS, "clk_gpu_stacks", "clk_gpu_src_t", 0,
+            RK3588_CLKSEL_CON(159), 0, 5, DFLAGS,
+            RK3588_CLKGATE_CON(66), 7, GFLAGS),
+    COMPOSITE_NODIV(CLK_GPU_SRC, "clk_gpu_src", mux_gpu_src_t_pvtpll_gpu, 0,
+            RK3588_CLKSEL_CON(158), 14, 1, MFLAGS,
+            RK3588_CLKGATE_CON(66), 3, GFLAGS),
 	GATE(CLK_GPU, "clk_gpu", "clk_gpu_src", 0,
 			RK3588_CLKGATE_CON(66), 4, GFLAGS),
-	GATE(CLK_GPU_COREGROUP, "clk_gpu_coregroup", "clk_gpu_src", 0,
+	GATE(CLK_GPU_COREGROUP, "clk_gpu_coregroup", "clk_gpu_src_t", 0,
 			RK3588_CLKGATE_CON(66), 6, GFLAGS),
-	COMPOSITE_NOMUX(CLK_GPU_STACKS, "clk_gpu_stacks", "clk_gpu_src", 0,
-			RK3588_CLKSEL_CON(159), 0, 5, DFLAGS,
-			RK3588_CLKGATE_CON(66), 7, GFLAGS),
 	GATE(CLK_GPU_PVTM, "clk_gpu_pvtm", "xin24m", 0,
 			RK3588_CLKGATE_CON(67), 0, GFLAGS),
 	GATE(CLK_CORE_GPU_PVTM, "clk_core_gpu_pvtm", "clk_gpu_src", 0,
 			RK3588_CLKGATE_CON(67), 1, GFLAGS),
+    GATE(CLK_GPU, "clk_gpu_pvtpll", "pvtpll_gpu", 0,
+            RK3588_CLKGATE_CON(67), 3, GFLAGS),
 
 	/* isp1 */
 	COMPOSITE(ACLK_ISP1_ROOT, "aclk_isp1_root", gpll_cpll_aupll_spll_p, 0,

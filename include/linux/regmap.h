@@ -1283,6 +1283,17 @@ struct reg_field {
 	unsigned int id_offset;
 };
 
+struct regmap_field {
+	struct regmap *regmap;
+	unsigned int mask;
+	/* lsb */
+	unsigned int shift;
+	unsigned int reg;
+
+	unsigned int id_size;
+	unsigned int id_offset;
+};
+
 #define REG_FIELD(_reg, _lsb, _msb) {		\
 				.reg = _reg,	\
 				.lsb = _lsb,	\
