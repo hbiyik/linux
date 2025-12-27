@@ -88,6 +88,31 @@
 		#size-cells = <2>;
 		ranges;
 
+		gpu_pvtpll: gpu-pvtpll@FD5A0000 {
+			compatible = "rockchip,pvtpll-adaptive";
+
+			reg = <0 0xFD5A0000 0 0x1000>;
+			#clock-cells = <0>;
+			clock-output-names = "gpu_pvtpll";
+
+			clocks = <&cru CLK_GPU>,
+					 <&cru CLK_GPU_STACKS>,
+					 <&cru CLK_GPU_COREGROUP>,
+					 <&cru CLK_GPU_PVTPLL>;
+
+			power-domains = <&power RK3588_PD_GPU>;
+
+			nvmem-cells = <&gpu_opp_info>;
+			nvmem-cell-names = "opp-info";
+
+			max-rate = <1000000000>;
+			min-rate = <500000000>;
+
+			ring-max-len = <55>;
+			ring-min-len = <12>;
+			ring = <1>;
+		};
+
 		spll: spll {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
