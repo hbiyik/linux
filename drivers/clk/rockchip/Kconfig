@@ -200,6 +200,12 @@ config ROCKCHIP_CLK_PVTPLL
 	help
 	  Say y here to enable clk pvtpll.
 
+config ROCKCHIP_CLK_PVTPLL_ADAPTIVE
+	tristate "Rockchip Clk Pvtpll Adaptive"
+	default n
+	help
+	  Say y here to enable clk pvtpll adaptive.
+
 config ROCKCHIP_DDRCLK
 	bool
 
