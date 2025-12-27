@@ -2982,12 +2982,10 @@
 			     <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-names = "GPU", "MMU", "JOB";
 
-		clocks = <&scmi_clk SCMI_CLK_GPU>, <&cru CLK_GPU_COREGROUP>,
+		clocks = <&cru CLK_GPU_PVTPLL>, <&cru CLK_GPU_COREGROUP>,
 			 <&cru CLK_GPU_STACKS>, <&cru CLK_GPU>;
 		clock-names = "clk_mali", "clk_gpu_coregroup",
 			      "clk_gpu_stacks", "clk_gpu";
-		assigned-clocks = <&scmi_clk SCMI_CLK_GPU>;
-		assigned-clock-rates = <200000000>;
 		power-domains = <&power RK3588_PD_GPU>;
 		operating-points-v2 = <&gpu_opp_table>;
 		#cooling-cells = <2>;
@@ -3003,9 +3001,7 @@
 		compatible = "rockchip,rk3588-mali", "arm,mali-valhall-csf";
 		reg = <0x0 0xfb000000 0x0 0x200000>;
 		#cooling-cells = <2>;
-		assigned-clocks = <&scmi_clk SCMI_CLK_GPU>;
-		assigned-clock-rates = <200000000>;
-		clocks = <&cru CLK_GPU>, <&cru CLK_GPU_COREGROUP>,
+		clocks = <&cru CLK_GPU_PVTPLL>, <&cru CLK_GPU_COREGROUP>,
 			 <&cru CLK_GPU_STACKS>;
 		clock-names = "core", "coregroup", "stacks";
 		dynamic-power-coefficient = <2982>;
@@ -3101,7 +3097,7 @@
 		rockchip,pvtm-temp-prop = <(-135) (-135)>;
 		rockchip,pvtm-thermal-zone = "gpu-thermal";
 
-		rockchip,opp-clocks = <&cru CLK_GPU>;
+		rockchip,opp-clocks = <&cru CLK_GPU_PVTPLL>;
 		rockchip,grf = <&gpu_grf>;
 		volt-mem-read-margin = <
 			855000	1
