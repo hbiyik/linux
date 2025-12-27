@@ -11,6 +11,7 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/clk.h>
+#include <linux/clk-provider.h>
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/device.h>
@@ -1064,11 +1065,27 @@ static int _disable_opp_table(struct device *dev, struct opp_table *opp_table)
 	return ret;
 }
 
+static bool _clk_is_voltage_first(struct clk *clk)
+{
+	struct clk_hw *hw;
+	struct clk *parent = clk;
+
+	while (parent) {
+		/* Convert struct clk to struct clk_hw */
+		hw = __clk_get_hw(parent);
+		if (hw && (clk_hw_get_flags(hw) & CLK_VOLTAGE_FIRST))
+			return true;
+		
+		parent = clk_get_parent(parent);
+	}
+	return false;
+}
+
 static int _set_opp(struct device *dev, struct opp_table *opp_table,
 		    struct dev_pm_opp *opp, void *clk_data, bool forced)
 {
 	struct dev_pm_opp *old_opp;
-	int scaling_down, ret;
+	int scaling_down, ret, voltage_first;
 
 	if (unlikely(!opp))
 		return _disable_opp_table(dev, opp_table);
@@ -1093,9 +1110,10 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
 	scaling_down = _opp_compare_key(opp_table, old_opp, opp);
 	if (scaling_down == -1)
 		scaling_down = 0;
+	voltage_first = _clk_is_voltage_first(opp_table->clk);
 
 	/* Scaling up? Configure required OPPs before frequency */
-	if (!scaling_down) {
+	if (!scaling_down || voltage_first) {
 		ret = _set_required_opps(dev, opp_table, opp, true);
 		if (ret) {
 			dev_err(dev, "Failed to set required opps: %d\n", ret);
@@ -1127,7 +1145,7 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
 	}
 
 	/* Scaling down? Configure required OPPs after frequency */
-	if (scaling_down) {
+	if (scaling_down && !voltage_first) {
 		if (opp_table->config_regulators) {
 			ret = opp_table->config_regulators(dev, old_opp, opp,
 							   opp_table->regulators,
