@@ -717,8 +717,9 @@
 #define PCLK_DDR_MON_CH1		723
 #define PCLK_DDR_MON_CH2		724
 #define PCLK_DDR_MON_CH3		725
+#define CLK_GPU_PVTPLL			726
 
-#define CLK_NR_CLKS			(PCLK_DDR_MON_CH3 + 1)
+#define CLK_NR_CLKS			(CLK_GPU_PVTPLL + 1)
 
 /********Name=SOFTRST_CON01,Offset=0xA04********/
 #define SRST_A_TOP_BIU			19
