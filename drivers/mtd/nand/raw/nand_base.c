@@ -47,6 +47,52 @@
 
 #include "internals.h"
 
+
+static int nand_pairing_dist6_256p_get_info(struct mtd_info *mtd, int page,
+				       struct mtd_pairing_info *info)
+{
+	// first 4 pairs
+	if (page < 4){
+		info->group = 0;
+		info->pair = page;
+		return 0;
+	} else if (page == 6 || page == 7 || page == 10 || page == 11) {
+		info->group = 1;
+		info->pair = page - 6;
+		return 0;
+	}
+	int mod = page % 4;
+
+	// 6 dist (page 253: last 2 pairs)
+	if (mod <= 1 || (mod >= 2 && page > 253)){
+		info->pair = (page + 4 + mod) / 2;
+		info->group = 0;
+	} else if (mod >= 2){
+		info->pair = (page - 4 + mod) / 2;
+		info->group = 1;
+	}
+
+	return 0;
+}
+
+static int nand_pairing_dist6_256p_get_wunit(struct mtd_info *mtd,
+					const struct mtd_pairing_info *info)
+{
+	// first 4 pairs
+	if(info->pair < 4)
+		return info->pair + 6 * info->group;
+	
+	// last 2 pairs
+	if(info->pair > 129)
+		return info->pair * 2 - 6 - info->pair % 2;
+
+	// 4 dist
+	if(info->group)
+		return info->pair * 2 + 2 - info->pair % 2;
+	else
+		return info->pair * 2 - 4 - info->pair % 2;
+}
+
 static int nand_pairing_dist3_get_info(struct mtd_info *mtd, int page,
 				       struct mtd_pairing_info *info)
 {
@@ -90,6 +136,12 @@ static int nand_pairing_dist3_get_wunit(struct mtd_info *mtd,
 
 	return page;
 }
+
+const struct mtd_pairing_scheme dist6_256p_pairing_scheme = {
+	.ngroups = 2,
+	.get_info = nand_pairing_dist6_256p_get_info,
+	.get_wunit = nand_pairing_dist6_256p_get_wunit,
+};
 
 const struct mtd_pairing_scheme dist3_pairing_scheme = {
 	.ngroups = 2,

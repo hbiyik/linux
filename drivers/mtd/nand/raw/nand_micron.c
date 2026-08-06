@@ -474,6 +474,30 @@ static int micron_supports_on_die_ecc(struct nand_chip *chip)
 	return MICRON_ON_DIE_SUPPORTED;
 }
 
+static void micron_supports_dist6_pair(struct nand_chip *chip){
+	struct mtd_info *mtd = nand_to_mtd(chip);
+	static const char *part_nums[] = {
+		"MT29F64G08CBABA",
+		"MT29F64G08CBABB",
+		"MT29F128G08CFABA",
+		"MT29F128G08CFABB",
+		"MT29F256G08CJABA",
+		"MT29F256G08CJABB",
+		"MT29F64G08CBCBB",
+		"MT29F128G08CECBB",
+		"MT29F256G08CKCBB",
+		"MT29F256G08CMCBB",
+		"MT29F512G08CUCBB",
+	};
+	
+	for(int i=0; i < ARRAY_SIZE(part_nums); i++){
+		if(strstarts(chip->parameters.model, part_nums[i])){
+			mtd_set_pairing_scheme(mtd, &dist6_256p_pairing_scheme);
+			break;
+		}
+	}
+}
+
 static int micron_nand_init(struct nand_chip *chip)
 {
 	struct nand_device *base = &chip->base;
@@ -563,6 +587,7 @@ static int micron_nand_init(struct nand_chip *chip)
 		}
 	}
 
+	micron_supports_dist6_pair(chip);
 	return 0;
 
 err_free_manuf_data:
