@@ -919,6 +919,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		break;
 
 	case MEMERASE:
+		return -EOPNOTSUPP;
 	case MEMERASE64:
 	{
 		struct erase_info *erase;
@@ -938,6 +939,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 				erase->addr = einfo64.start;
 				erase->len = einfo64.length;
 			} else {
+				return -EOPNOTSUPP;
 				struct erase_info_user einfo32;
 
 				if (copy_from_user(&einfo32, argp,
@@ -957,6 +959,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	case MEMWRITEOOB:
 	{
+		return -EOPNOTSUPP;
 		struct mtd_oob_buf buf;
 		struct mtd_oob_buf __user *buf_user = argp;
 
@@ -971,6 +974,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	case MEMREADOOB:
 	{
+		return -EOPNOTSUPP;
 		struct mtd_oob_buf buf;
 		struct mtd_oob_buf __user *buf_user = argp;
 
