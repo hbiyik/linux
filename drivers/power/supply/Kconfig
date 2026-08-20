@@ -45,6 +45,19 @@ config GENERIC_ADC_BATTERY
 	  Say Y here to enable support for the generic battery driver
 	  which uses IIO framework to read adc.
 
+config SAMPLED_ADC_BATTERY
+	tristate "Sampled ADC battery support"
+	depends on IIO
+	depends on GPIOLIB
+	help
+	  Say Y here to enable support for a synchronous, blocking battery
+	  driver that samples analog (IIO) and digital (GPIO) inputs a
+	  configurable number of times ("count"), spaced by a configurable
+	  "sleep-period" in milliseconds. Analog readings are averaged;
+	  digital readings must be stable (at most one transition) to be
+	  trusted. Battery capacity is estimated from the averaged voltage
+	  using the battery's OCV (charging) or CCV (discharging) tables.
+
 config IP5XXX_POWER
 	tristate "Injoinic IP5xxx power bank IC driver"
 	depends on I2C
