@@ -792,6 +792,9 @@ struct power_supply_battery_info {
 	int temp_max;
 	const struct power_supply_battery_ocv_table *ocv_table[POWER_SUPPLY_OCV_TEMP_MAX];
 	int ocv_table_size[POWER_SUPPLY_OCV_TEMP_MAX];
+	int ccv_temp[POWER_SUPPLY_OCV_TEMP_MAX];
+	const struct power_supply_battery_ocv_table *ccv_table[POWER_SUPPLY_OCV_TEMP_MAX];
+	int ccv_table_size[POWER_SUPPLY_OCV_TEMP_MAX];
 	const struct power_supply_resistance_temp_table *resist_table;
 	int resist_table_size;
 	const struct power_supply_vbat_ri_table *vbat2ri_discharging;
@@ -835,6 +838,11 @@ power_supply_find_ocv2cap_table(struct power_supply_battery_info *info,
 				int temp, int *table_len);
 extern int power_supply_batinfo_ocv2cap(struct power_supply_battery_info *info,
 					int ocv, int temp);
+extern const struct power_supply_battery_ocv_table *
+power_supply_find_ccv2cap_table(struct power_supply_battery_info *info,
+				int temp, int *table_len);
+extern int power_supply_batinfo_ccv2cap(struct power_supply_battery_info *info,
+					int ccv, int temp);
 extern int
 power_supply_temp2resist_simple(const struct power_supply_resistance_temp_table *table,
 				int table_len, int temp);

@@ -656,6 +656,9 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		info->ocv_table[index]       = NULL;
 		info->ocv_temp[index]        = -EINVAL;
 		info->ocv_table_size[index]  = -EINVAL;
+		info->ccv_table[index]       = NULL;
+		info->ccv_temp[index]        = -EINVAL;
+		info->ccv_table_size[index]  = -EINVAL;
 	}
 
 	/* The property and field names below must correspond to elements
@@ -775,6 +778,68 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		info->ocv_table[index] = table =
 			devm_kcalloc(&psy->dev, tab_len, sizeof(*table), GFP_KERNEL);
 		if (!info->ocv_table[index]) {
+			power_supply_put_battery_info(psy, info);
+			err = -ENOMEM;
+			goto out_put_node;
+		}
+
+		for (i = 0; i < tab_len; i++) {
+			table[i].ocv = propdata[i*2];
+			table[i].capacity = propdata[i*2+1];
+		}
+	}
+
+	len = fwnode_property_count_u32(fwnode, "ccv-capacity-celsius");
+	if (len < 0 && len != -EINVAL) {
+		err = len;
+		goto out_put_node;
+	} else if (len > POWER_SUPPLY_OCV_TEMP_MAX) {
+		dev_err(&psy->dev, "Too many temperature values\n");
+		err = -EINVAL;
+		goto out_put_node;
+	} else if (len > 0) {
+		fwnode_property_read_u32_array(fwnode, "ccv-capacity-celsius",
+					   info->ccv_temp, len);
+	}
+
+	for (index = 0; index < len; index++) {
+		struct power_supply_battery_ocv_table *table;
+		int i, tab_len;
+
+		char *propname __free(kfree) = kasprintf(GFP_KERNEL, "ccv-capacity-table-%d",
+							 index);
+		if (!propname) {
+			power_supply_put_battery_info(psy, info);
+			err = -ENOMEM;
+			goto out_put_node;
+		}
+		proplen = fwnode_property_count_u32(fwnode, propname);
+		if (proplen < 0 || proplen % 2 != 0) {
+			dev_err(&psy->dev, "failed to get %s\n", propname);
+			power_supply_put_battery_info(psy, info);
+			err = -EINVAL;
+			goto out_put_node;
+		}
+
+		u32 *propdata __free(kfree) = kcalloc(proplen, sizeof(*propdata), GFP_KERNEL);
+		if (!propdata) {
+			power_supply_put_battery_info(psy, info);
+			err = -EINVAL;
+			goto out_put_node;
+		}
+		err = fwnode_property_read_u32_array(fwnode, propname, propdata, proplen);
+		if (err < 0) {
+			dev_err(&psy->dev, "failed to get %s\n", propname);
+			power_supply_put_battery_info(psy, info);
+			goto out_put_node;
+		}
+
+		tab_len = proplen / 2;
+		info->ccv_table_size[index] = tab_len;
+
+		info->ccv_table[index] = table =
+			devm_kcalloc(&psy->dev, tab_len, sizeof(*table), GFP_KERNEL);
+		if (!info->ccv_table[index]) {
 			power_supply_put_battery_info(psy, info);
 			err = -ENOMEM;
 			goto out_put_node;
@@ -1171,6 +1236,47 @@ int power_supply_batinfo_ocv2cap(struct power_supply_battery_info *info,
 	return power_supply_ocv2cap_simple(table, table_len, ocv);
 }
 EXPORT_SYMBOL_GPL(power_supply_batinfo_ocv2cap);
+
+const struct power_supply_battery_ocv_table *
+power_supply_find_ccv2cap_table(struct power_supply_battery_info *info,
+				int temp, int *table_len)
+{
+	int best_temp_diff = INT_MAX, temp_diff;
+	u8 i, best_index = 0;
+
+	if (!info->ccv_table[0])
+		return NULL;
+
+	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
+		if (!info->ccv_table[i])
+			break;
+
+		temp_diff = abs(info->ccv_temp[i] - temp);
+
+		if (temp_diff < best_temp_diff) {
+			best_temp_diff = temp_diff;
+			best_index = i;
+		}
+	}
+
+	*table_len = info->ccv_table_size[best_index];
+	return info->ccv_table[best_index];
+}
+EXPORT_SYMBOL_GPL(power_supply_find_ccv2cap_table);
+
+int power_supply_batinfo_ccv2cap(struct power_supply_battery_info *info,
+				 int ccv, int temp)
+{
+	const struct power_supply_battery_ocv_table *table;
+	int table_len;
+
+	table = power_supply_find_ccv2cap_table(info, temp, &table_len);
+	if (!table)
+		return -EINVAL;
+
+	return power_supply_ocv2cap_simple(table, table_len, ccv);
+}
+EXPORT_SYMBOL_GPL(power_supply_batinfo_ccv2cap);
 
 bool power_supply_battery_bti_in_range(struct power_supply_battery_info *info,
 				       int resistance)
