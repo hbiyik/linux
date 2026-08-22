@@ -232,6 +232,7 @@ snd-soc-pm4125-y := pm4125.o
 snd-soc-pm4125-sdw-y := pm4125-sdw.o
 snd-soc-rk3308-y := rk3308_codec.o
 snd-soc-rk3328-y := rk3328_codec.o
+snd-soc-rk610-y := rk610-codec.o
 snd-soc-rk817-y := rk817_codec.o
 snd-soc-rl6231-y := rl6231.o
 snd-soc-rt-sdw-common-y := rt-sdw-common.o
@@ -668,6 +669,7 @@ obj-$(CONFIG_SND_SOC_PM4125) += snd-soc-pm4125-sdw.o
 endif
 obj-$(CONFIG_SND_SOC_RK3308)	+= snd-soc-rk3308.o
 obj-$(CONFIG_SND_SOC_RK3328)	+= snd-soc-rk3328.o
+obj-$(CONFIG_SND_SOC_RK610)	+= snd-soc-rk610.o
 obj-$(CONFIG_SND_SOC_RK817)	+= snd-soc-rk817.o
 obj-$(CONFIG_SND_SOC_RL6231)	+= snd-soc-rl6231.o
 obj-$(CONFIG_SND_SOC_RT_SDW_COMMON)	+= snd-soc-rt-sdw-common.o

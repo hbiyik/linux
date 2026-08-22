@@ -1676,6 +1676,15 @@ config SND_SOC_RK3328
 	depends on ARCH_ROCKCHIP || COMPILE_TEST
 	select REGMAP_MMIO
 
+config SND_SOC_RK610
+	tristate "Rockchip RK610 audio codec"
+	depends on I2C
+	help
+	  Say Y here to enable support for the audio codec function of the
+	  Rockchip RK610 ("Jetta") multimedia companion chip. This chip also
+	  provides LVDS and HDMI video bridging and an independent HDMI
+	  audio path, on separate I2C addresses from this codec function.
+
 config SND_SOC_RK817
 	tristate "Rockchip RK817 audio CODEC"
 	depends on MFD_RK8XX || COMPILE_TEST
