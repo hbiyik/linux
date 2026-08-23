@@ -712,12 +712,7 @@ rk3066_hdmi_register(struct drm_device *drm, struct rk3066_hdmi *hdmi)
 	if (IS_ERR(hdmi->bridge.ddc))
 		return PTR_ERR(hdmi->bridge.ddc);
 
-	if (IS_ERR(hdmi->bridge.ddc))
-		return PTR_ERR(hdmi->bridge.ddc);
-
-	ret = devm_drm_bridge_add(dev, &hdmi->bridge);
-	if (ret)
-		goto err_del_i2c;
+	drm_bridge_add(&hdmi->bridge);
 
 	ret = drm_bridge_attach(encoder, &hdmi->bridge, NULL, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret)
@@ -735,6 +730,7 @@ rk3066_hdmi_register(struct drm_device *drm, struct rk3066_hdmi *hdmi)
 	return 0;
 
 err_del_i2c:
+	drm_bridge_remove(&hdmi->bridge);
 	i2c_del_adapter(&hdmi->i2c->adap);
 	kfree(hdmi->i2c);
 	hdmi->i2c = NULL;
@@ -748,6 +744,7 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 	struct platform_device *pdev = to_platform_device(dev);
 	struct drm_device *drm = data;
 	struct rk3066_hdmi *hdmi;
+	struct resource *res;
 	int ret;
 
 	hdmi = devm_drm_bridge_alloc(dev, struct rk3066_hdmi, bridge,
@@ -757,24 +754,32 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 
 	hdmi->dev = dev;
 	hdmi->drm_dev = drm;
-	hdmi->regs = devm_platform_ioremap_resource(pdev, 0);
-	if (IS_ERR(hdmi->regs))
-		return PTR_ERR(hdmi->regs);
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!res)
+		return -ENXIO;
+
+	hdmi->regs = ioremap(res->start, resource_size(res));
+	if (!hdmi->regs)
+		return -ENOMEM;
 
 	hdmi->irq = platform_get_irq(pdev, 0);
-	if (hdmi->irq < 0)
-		return hdmi->irq;
+	if (hdmi->irq < 0) {
+		ret = hdmi->irq;
+		goto err_unmap;
+	}
 
-	hdmi->hclk = devm_clk_get(dev, "hclk");
+	hdmi->hclk = clk_get(dev, "hclk");
 	if (IS_ERR(hdmi->hclk)) {
 		DRM_DEV_ERROR(dev, "unable to get HDMI hclk clock\n");
-		return PTR_ERR(hdmi->hclk);
+		ret = PTR_ERR(hdmi->hclk);
+		goto err_unmap;
 	}
 
 	ret = clk_prepare_enable(hdmi->hclk);
 	if (ret) {
 		DRM_DEV_ERROR(dev, "cannot enable HDMI hclk clock: %d\n", ret);
-		return ret;
+		goto err_put_hclk;
 	}
 
 	hdmi->grf_regmap = syscon_regmap_lookup_by_phandle(dev->of_node,
@@ -813,11 +818,16 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 	return 0;
 
 err_cleanup_hdmi:
+	drm_bridge_remove(&hdmi->bridge);
 	i2c_del_adapter(&hdmi->i2c->adap);
 	kfree(hdmi->i2c);
 	hdmi->encoder.encoder.funcs->destroy(&hdmi->encoder.encoder);
 err_disable_hclk:
 	clk_disable_unprepare(hdmi->hclk);
+err_put_hclk:
+	clk_put(hdmi->hclk);
+err_unmap:
+	iounmap(hdmi->regs);
 
 	return ret;
 }
@@ -831,10 +841,14 @@ static void rk3066_hdmi_unbind(struct device *dev, struct device *master,
 
 	hdmi->encoder.encoder.funcs->destroy(&hdmi->encoder.encoder);
 
+	drm_bridge_remove(&hdmi->bridge);
 	i2c_del_adapter(&hdmi->i2c->adap);
 	kfree(hdmi->i2c);
 
 	clk_disable_unprepare(hdmi->hclk);
+	clk_put(hdmi->hclk);
+
+	iounmap(hdmi->regs);
 }
 
 static const struct component_ops rk3066_hdmi_ops = {
