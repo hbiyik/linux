@@ -646,7 +646,7 @@ static struct i2c_adapter *rk3066_hdmi_i2c_adapter(struct rk3066_hdmi *hdmi)
 	struct rk3066_hdmi_i2c *i2c;
 	int ret;
 
-	i2c = devm_kzalloc(hdmi->dev, sizeof(*i2c), GFP_KERNEL);
+	i2c = kzalloc(sizeof(*i2c), GFP_KERNEL);
 	if (!i2c)
 		return ERR_PTR(-ENOMEM);
 
@@ -661,11 +661,11 @@ static struct i2c_adapter *rk3066_hdmi_i2c_adapter(struct rk3066_hdmi *hdmi)
 	strscpy(adap->name, "RK3066 HDMI", sizeof(adap->name));
 	i2c_set_adapdata(adap, hdmi);
 
-	ret = devm_i2c_add_adapter(hdmi->dev, adap);
+	ret = i2c_add_adapter(adap);
 	if (ret) {
 		DRM_DEV_ERROR(hdmi->dev, "cannot add %s I2C adapter\n",
 			      adap->name);
-		devm_kfree(hdmi->dev, i2c);
+		kfree(i2c);
 		return ERR_PTR(ret);
 	}
 
@@ -717,22 +717,29 @@ rk3066_hdmi_register(struct drm_device *drm, struct rk3066_hdmi *hdmi)
 
 	ret = devm_drm_bridge_add(dev, &hdmi->bridge);
 	if (ret)
-		return ret;
+		goto err_del_i2c;
 
 	ret = drm_bridge_attach(encoder, &hdmi->bridge, NULL, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret)
-		return ret;
+		goto err_del_i2c;
 
 	hdmi->connector = drm_bridge_connector_init(drm, encoder);
 	if (IS_ERR(hdmi->connector)) {
 		ret = PTR_ERR(hdmi->connector);
 		dev_err(hdmi->dev, "failed to init bridge connector: %d\n", ret);
-		return ret;
+		goto err_del_i2c;
 	}
 
 	drm_connector_attach_encoder(hdmi->connector, encoder);
 
 	return 0;
+
+err_del_i2c:
+	i2c_del_adapter(&hdmi->i2c->adap);
+	kfree(hdmi->i2c);
+	hdmi->i2c = NULL;
+
+	return ret;
 }
 
 static int rk3066_hdmi_bind(struct device *dev, struct device *master,
@@ -741,7 +748,6 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 	struct platform_device *pdev = to_platform_device(dev);
 	struct drm_device *drm = data;
 	struct rk3066_hdmi *hdmi;
-	int irq;
 	int ret;
 
 	hdmi = devm_drm_bridge_alloc(dev, struct rk3066_hdmi, bridge,
@@ -755,9 +761,9 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 	if (IS_ERR(hdmi->regs))
 		return PTR_ERR(hdmi->regs);
 
-	irq = platform_get_irq(pdev, 0);
-	if (irq < 0)
-		return irq;
+	hdmi->irq = platform_get_irq(pdev, 0);
+	if (hdmi->irq < 0)
+		return hdmi->irq;
 
 	hdmi->hclk = devm_clk_get(dev, "hclk");
 	if (IS_ERR(hdmi->hclk)) {
@@ -796,9 +802,9 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 
 	dev_set_drvdata(dev, hdmi);
 
-	ret = devm_request_threaded_irq(dev, irq, rk3066_hdmi_hardirq,
-					rk3066_hdmi_irq, IRQF_SHARED,
-					dev_name(dev), hdmi);
+	ret = request_threaded_irq(hdmi->irq, rk3066_hdmi_hardirq,
+				    rk3066_hdmi_irq, IRQF_SHARED,
+				    dev_name(dev), hdmi);
 	if (ret) {
 		DRM_DEV_ERROR(dev, "failed to request hdmi irq: %d\n", ret);
 		goto err_cleanup_hdmi;
@@ -807,6 +813,8 @@ static int rk3066_hdmi_bind(struct device *dev, struct device *master,
 	return 0;
 
 err_cleanup_hdmi:
+	i2c_del_adapter(&hdmi->i2c->adap);
+	kfree(hdmi->i2c);
 	hdmi->encoder.encoder.funcs->destroy(&hdmi->encoder.encoder);
 err_disable_hclk:
 	clk_disable_unprepare(hdmi->hclk);
@@ -819,7 +827,12 @@ static void rk3066_hdmi_unbind(struct device *dev, struct device *master,
 {
 	struct rk3066_hdmi *hdmi = dev_get_drvdata(dev);
 
+	free_irq(hdmi->irq, hdmi);
+
 	hdmi->encoder.encoder.funcs->destroy(&hdmi->encoder.encoder);
+
+	i2c_del_adapter(&hdmi->i2c->adap);
+	kfree(hdmi->i2c);
 
 	clk_disable_unprepare(hdmi->hclk);
 }
